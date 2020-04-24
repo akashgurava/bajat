@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import './ui/pages/homepage.dart';
+
 void main() {
   runApp(BajatApp());
 }
@@ -24,21 +26,6 @@ class BajatApp extends StatelessWidget {
       ),
       themeMode: ThemeMode.dark,
       home: const HomePage(),
-    );
-  }
-}
-
-/// Homepage for the app.
-class HomePage extends StatelessWidget {
-  // ignore: public_member_api_docs
-  const HomePage({Key key}) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return const Scaffold(
-      body: Center(
-        child: Text('Hello World!'),
-      ),
     );
   }
 }
