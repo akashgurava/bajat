@@ -6,6 +6,7 @@ analyzer:
     missing_required_param: error
     missing_return: error
     todo: warning
+    close_sinks: ignore
   exclude:
     - "bin/cache/**"
     # the following two are relative to the stocks example and the flutter package respectively

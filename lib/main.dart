@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import './ui/pages/homepage.dart';
+import './ui/pages/home_page.dart';
 
 void main() {
   runApp(BajatApp());
