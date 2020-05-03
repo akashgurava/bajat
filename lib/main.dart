@@ -1,14 +1,19 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
-import './ui/pages/home_page.dart';
+import './config/routes.dart';
 
-void main() {
-  runApp(BajatApp());
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+
+  runApp(const BajatApp());
 }
 
 /// Main Application.
-// ignore: use_key_in_widget_constructors
 class BajatApp extends StatelessWidget {
+  // ignore: public_member_api_docs
+  const BajatApp({Key key}) : super(key: key);
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -23,9 +28,14 @@ class BajatApp extends StatelessWidget {
       darkTheme: ThemeData(
         brightness: Brightness.dark,
         visualDensity: VisualDensity.adaptivePlatformDensity,
+        cupertinoOverrideTheme: const CupertinoThemeData(
+          brightness: Brightness.dark,
+        ),
       ),
       themeMode: ThemeMode.dark,
-      home: const HomePage(),
+      // Use this instead of home so that we get the modal effect
+      // for home screen
+      onGenerateRoute: router,
     );
   }
 }
