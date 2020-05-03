@@ -1,7 +1,9 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/cupertino.dart';
 
-import '../../../logic/helpers/form_check.dart';
+import 'package:flutter_form_bloc/flutter_form_bloc.dart';
+
+import '../../../logic/bloc/transaction/expense_bloc.dart';
 
 /// Page to add User's expense transactions
 class AddExpensePage extends StatefulWidget {
@@ -12,9 +14,13 @@ class AddExpensePage extends StatefulWidget {
 }
 
 class _AddExpensePageState extends State<AddExpensePage> {
-  final _formKey = GlobalKey<FormState>();
+  /// Color for all the elements displayed on this page
   static const Color color = Color(0xFFEF9A9A);
+
+  /// Text style for text elements on the page
   static const TextStyle textStyle = TextStyle(color: color);
+
+  /// Underline color for the form elements
   static const UnderlineInputBorder border = UnderlineInputBorder(
     borderSide: BorderSide(
       color: color,
@@ -23,6 +29,10 @@ class _AddExpensePageState extends State<AddExpensePage> {
 
   @override
   Widget build(BuildContext context) {
+    final bloc = BlocProvider.of<ExpenseBloc>(context)
+      ..clear()
+      ..timestamp = DateTime.now();
+
     return Theme(
       data: ThemeData(
         buttonTheme: const ButtonThemeData(buttonColor: color),
@@ -54,101 +64,123 @@ class _AddExpensePageState extends State<AddExpensePage> {
           FocusScope.of(context).requestFocus(FocusNode());
         },
         child: Material(
-          child: SingleChildScrollView(
-            physics: const BouncingScrollPhysics(),
-            child: Column(
-              children: <Widget>[
-                Form(
-                  key: _formKey,
-                  child: Column(
-                    children: <Widget>[
-                      const SizedBox(height: 10),
-                      SizedBox(
-                        width: 200,
-                        child: TextFormField(
-                          initialValue: '0',
-                          style: textStyle,
-                          autovalidate: true,
-                          validator: isNumeric,
-                          keyboardType: TextInputType.phone,
-                          decoration: const InputDecoration(
-                            labelText: 'Amount',
-                            icon: Icon(Icons.monetization_on, color: color),
-                          ),
+          child: FormBlocListener<ExpenseBloc, String, String>(
+            onSuccess: (context, state) {
+              Navigator.of(context).pop();
+            },
+            onFailure: (context, state) {
+              Scaffold.of(context)
+                  .showSnackBar(SnackBar(content: Text(state.failureResponse)));
+            },
+            child: SingleChildScrollView(
+              physics: const ClampingScrollPhysics(),
+              child: Column(
+                children: <Widget>[
+                  // Amount
+                  SizedBox(
+                    width: 250,
+                    child: TextFieldBlocBuilder(
+                      style: textStyle,
+                      textFieldBloc: bloc.amount,
+                      keyboardType: TextInputType.phone,
+                      decoration: const InputDecoration(
+                        labelText: 'Amount',
+                        prefixIcon: Icon(
+                          Icons.monetization_on,
+                          color: color,
                         ),
                       ),
-                      SizedBox(
-                        width: 200,
-                        child: TextFormField(
-                          style: textStyle,
-                          validator: notEmpty,
-                          keyboardType: TextInputType.text,
-                          decoration: const InputDecoration(
-                            labelText: 'From Account',
-                            icon: Icon(Icons.account_balance, color: color),
-                          ),
-                        ),
-                      ),
-                      SizedBox(
-                        width: 200,
-                        child: TextFormField(
-                          style: textStyle,
-                          validator: notEmpty,
-                          keyboardType: TextInputType.text,
-                          decoration: const InputDecoration(
-                            labelText: 'Category',
-                            icon: Icon(Icons.category, color: color),
-                          ),
-                        ),
-                      ),
-                      SizedBox(
-                        width: 200,
-                        child: TextFormField(
-                          style: textStyle,
-                          validator: notEmpty,
-                          keyboardType: TextInputType.text,
-                          decoration: const InputDecoration(
-                            labelText: 'Sub Category',
-                            icon: Icon(Icons.art_track, color: color),
-                          ),
-                        ),
-                      ),
-                      SizedBox(
-                        width: 200,
-                        child: TextFormField(
-                          style: textStyle,
-                          keyboardType: TextInputType.text,
-                          decoration: const InputDecoration(
-                            labelText: 'Description',
-                            icon: Icon(Icons.description, color: color),
-                          ),
-                        ),
-                      ),
-                      const SizedBox(height: 10),
-                      const Text('Date', style: TextStyle(color: color)),
-                      const SizedBox(height: 10),
-                      SizedBox(
-                        height: 80,
-                        width: 300,
-                        child: CupertinoDatePicker(
-                          onDateTimeChanged: (datetime) {},
-                        ),
-                      ),
-                      const SizedBox(height: 10),
-                      RaisedButton(
-                        onPressed: () {
-                          _formKey.currentState.validate();
-                          if (_formKey.currentState.validate()) {
-                            Navigator.pop(context);
-                          }
-                        },
-                        child: const Text('Submit'),
-                      ),
-                      const SizedBox(height: 10),
-                    ],
+                    ),
                   ),
-                ),
-              ],
+                  // From account
+                  SizedBox(
+                    width: 250,
+                    child: TextFieldBlocBuilder(
+                      style: textStyle,
+                      textFieldBloc: bloc.fromAccount,
+                      keyboardType: TextInputType.text,
+                      decoration: const InputDecoration(
+                        labelText: 'From account',
+                        prefixIcon: Icon(
+                          Icons.account_balance_wallet,
+                          color: color,
+                        ),
+                      ),
+                    ),
+                  ),
+                  // Category
+                  SizedBox(
+                    width: 250,
+                    child: TextFieldBlocBuilder(
+                      style: textStyle,
+                      textFieldBloc: bloc.category,
+                      keyboardType: TextInputType.text,
+                      decoration: const InputDecoration(
+                        labelText: 'Category',
+                        prefixIcon: Icon(
+                          Icons.category,
+                          color: color,
+                        ),
+                      ),
+                    ),
+                  ),
+                  // Sub category
+                  SizedBox(
+                    width: 250,
+                    child: TextFieldBlocBuilder(
+                      style: textStyle,
+                      textFieldBloc: bloc.subCategory,
+                      keyboardType: TextInputType.text,
+                      decoration: const InputDecoration(
+                        labelText: 'Sub category',
+                        prefixIcon: Icon(
+                          Icons.change_history,
+                          color: color,
+                        ),
+                      ),
+                    ),
+                  ),
+                  // Description
+                  SizedBox(
+                    width: 250,
+                    child: TextFieldBlocBuilder(
+                      style: textStyle,
+                      textFieldBloc: bloc.description,
+                      keyboardType: TextInputType.text,
+                      decoration: const InputDecoration(
+                        labelText: 'Description',
+                        prefixIcon: Icon(
+                          Icons.description,
+                          color: color,
+                        ),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 10),
+                  // Date text
+                  const Text('Date', style: TextStyle(color: color)),
+                  const SizedBox(height: 10),
+                  // Date picker
+                  SizedBox(
+                    height: 80,
+                    width: 300,
+                    child: CupertinoDatePicker(
+                      mode: CupertinoDatePickerMode.dateAndTime,
+                      initialDateTime: bloc.timestamp,
+                      onDateTimeChanged: (datetime) {
+                        bloc.timestamp = datetime;
+                      },
+                    ),
+                  ),
+                  const SizedBox(height: 10),
+                  // Submit button
+                  RaisedButton(
+                    onPressed: bloc.submit,
+                    child: const Text('Submit'),
+                  ),
+                  const SizedBox(height: 10),
+                ],
+              ),
             ),
           ),
         ),

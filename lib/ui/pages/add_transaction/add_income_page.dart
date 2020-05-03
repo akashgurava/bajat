@@ -1,7 +1,9 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/cupertino.dart';
 
-import '../../../logic/helpers/form_check.dart';
+import 'package:flutter_form_bloc/flutter_form_bloc.dart';
+
+import '../../../logic/bloc/transaction/income_bloc.dart';
 
 /// Page to add User's income transactions
 class AddIncomePage extends StatefulWidget {
@@ -13,9 +15,13 @@ class AddIncomePage extends StatefulWidget {
 }
 
 class _AddIncomePageState extends State<AddIncomePage> {
-  final _formKey = GlobalKey<FormState>();
+  /// Color for all the elements displayed on this page
   static const Color color = Colors.green;
+
+  /// Text style for text elements on the page
   static const TextStyle textStyle = TextStyle(color: color);
+
+  /// Underline color for the form elements
   static const UnderlineInputBorder border = UnderlineInputBorder(
     borderSide: BorderSide(
       color: color,
@@ -24,6 +30,10 @@ class _AddIncomePageState extends State<AddIncomePage> {
 
   @override
   Widget build(BuildContext context) {
+    final bloc = BlocProvider.of<IncomeBloc>(context)
+      ..clear()
+      ..timestamp = DateTime.now();
+
     return Theme(
       data: ThemeData(
         buttonTheme: const ButtonThemeData(buttonColor: color),
@@ -55,89 +65,107 @@ class _AddIncomePageState extends State<AddIncomePage> {
           FocusScope.of(context).requestFocus(FocusNode());
         },
         child: Material(
-          child: SingleChildScrollView(
-            physics: const BouncingScrollPhysics(),
-            child: Column(
-              children: <Widget>[
-                Form(
-                  key: _formKey,
-                  child: Column(
-                    children: <Widget>[
-                      const SizedBox(height: 10),
-                      SizedBox(
-                        width: 200,
-                        child: TextFormField(
-                          initialValue: '0',
-                          style: textStyle,
-                          autovalidate: true,
-                          validator: isNumeric,
-                          keyboardType: TextInputType.phone,
-                          decoration: const InputDecoration(
-                            labelText: 'Amount',
-                            icon: Icon(Icons.monetization_on, color: color),
-                          ),
+          child: FormBlocListener<IncomeBloc, String, String>(
+            onSuccess: (context, state) {
+              Navigator.of(context).pop();
+            },
+            onFailure: (context, state) {
+              Scaffold.of(context)
+                  .showSnackBar(SnackBar(content: Text(state.failureResponse)));
+            },
+            child: SingleChildScrollView(
+              physics: const ClampingScrollPhysics(),
+              child: Column(
+                children: <Widget>[
+                  // Amount
+                  SizedBox(
+                    width: 250,
+                    child: TextFieldBlocBuilder(
+                      style: textStyle,
+                      textFieldBloc: bloc.amount,
+                      keyboardType: TextInputType.phone,
+                      decoration: const InputDecoration(
+                        labelText: 'Amount',
+                        prefixIcon: Icon(
+                          Icons.monetization_on,
+                          color: color,
                         ),
                       ),
-                      // TODO: change to income category
-                      SizedBox(
-                        width: 200,
-                        child: TextFormField(
-                          style: textStyle,
-                          validator: notEmpty,
-                          keyboardType: TextInputType.text,
-                          decoration: const InputDecoration(
-                            labelText: 'Source',
-                            icon: Icon(Icons.call_received, color: color),
-                          ),
-                        ),
-                      ),
-                      SizedBox(
-                        width: 200,
-                        child: TextFormField(
-                          style: textStyle,
-                          validator: notEmpty,
-                          keyboardType: TextInputType.text,
-                          decoration: const InputDecoration(
-                            labelText: 'Account',
-                            icon: Icon(Icons.account_balance, color: color),
-                          ),
-                        ),
-                      ),
-                      SizedBox(
-                        width: 200,
-                        child: TextFormField(
-                          style: textStyle,
-                          keyboardType: TextInputType.text,
-                          decoration: const InputDecoration(
-                            labelText: 'Description',
-                            icon: Icon(Icons.description, color: color),
-                          ),
-                        ),
-                      ),
-                      const SizedBox(height: 10),
-                      const Text('Date', style: TextStyle(color: color)),
-                      const SizedBox(height: 10),
-                      SizedBox(
-                        height: 80,
-                        width: 300,
-                        child: CupertinoDatePicker(
-                          onDateTimeChanged: (datetime) {},
-                        ),
-                      ),
-                      const SizedBox(height: 10),
-                      RaisedButton(
-                        onPressed: () {
-                          if (_formKey.currentState.validate()) {
-                            Navigator.pop(context);
-                          }
-                        },
-                        child: const Text('Submit'),
-                      ),
-                      const SizedBox(height: 10),
-                    ],
+                    ),
                   ),
-                ),
-              ],
+                  // Source
+                  SizedBox(
+                    width: 250,
+                    child: TextFieldBlocBuilder(
+                      style: textStyle,
+                      textFieldBloc: bloc.source,
+                      keyboardType: TextInputType.text,
+                      decoration: const InputDecoration(
+                        labelText: 'Source',
+                        prefixIcon: Icon(
+                          Icons.call_received,
+                          color: color,
+                        ),
+                      ),
+                    ),
+                  ),
+                  // To account
+                  SizedBox(
+                    width: 250,
+                    child: TextFieldBlocBuilder(
+                      style: textStyle,
+                      textFieldBloc: bloc.toAccount,
+                      keyboardType: TextInputType.text,
+                      decoration: const InputDecoration(
+                        labelText: 'To account',
+                        prefixIcon: Icon(
+                          Icons.account_balance,
+                          color: color,
+                        ),
+                      ),
+                    ),
+                  ),
+                  // Description
+                  SizedBox(
+                    width: 250,
+                    child: TextFieldBlocBuilder(
+                      style: textStyle,
+                      textFieldBloc: bloc.description,
+                      keyboardType: TextInputType.text,
+                      decoration: const InputDecoration(
+                        labelText: 'Description',
+                        prefixIcon: Icon(
+                          Icons.description,
+                          color: color,
+                        ),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 10),
+                  // Date text
+                  const Text('Date', style: textStyle),
+                  const SizedBox(height: 10),
+                  // Date picker
+                  SizedBox(
+                    height: 80,
+                    width: 300,
+                    child: CupertinoDatePicker(
+                      mode: CupertinoDatePickerMode.dateAndTime,
+                      initialDateTime: bloc.timestamp,
+                      onDateTimeChanged: (datetime) {
+                        bloc.timestamp = datetime;
+                      },
+                    ),
+                  ),
+                  const SizedBox(height: 10),
+                  // Submit button
+                  RaisedButton(
+                    onPressed: bloc.submit,
+                    child: const Text('Submit'),
+                  ),
+                  const SizedBox(height: 10),
+                ],
+              ),
             ),
           ),
         ),

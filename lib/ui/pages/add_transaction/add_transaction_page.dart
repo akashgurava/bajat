@@ -1,14 +1,19 @@
 import 'package:flutter/material.dart';
 
 import 'package:flutter/cupertino.dart';
+import 'package:flutter_form_bloc/flutter_form_bloc.dart';
 
 import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
+
+import '../../../logic/bloc/transaction/expense_bloc.dart';
+import '../../../logic/bloc/transaction/income_bloc.dart';
+import '../../../logic/bloc/transaction/transfer_bloc.dart';
 
 import 'add_expense_page.dart';
 import 'add_income_page.dart';
 import 'add_transfer_page.dart';
 
-/// Page to add User's transfer transactions
+/// Scaffold Page to hold add any kind of transaction.
 class AddTransactionPage extends StatefulWidget {
   // ignore: public_member_api_docs
   const AddTransactionPage({Key key}) : super(key: key);
@@ -18,12 +23,14 @@ class AddTransactionPage extends StatefulWidget {
 }
 
 class _AddTransactionPageState extends State<AddTransactionPage> {
+  /// Widgets for segements in tab control
   final Map<String, Widget> segmentedTabs = {
     'income': const Text('Income'),
     'expense': const Text('Expense'),
     'transfer': const Text('Transfer'),
   };
 
+  /// Corresponding child Widgets for selected segement
   final Map<String, Widget> tabChildren = {
     'income': const AddIncomePage(),
     'expense': const AddExpensePage(),
@@ -33,6 +40,7 @@ class _AddTransactionPageState extends State<AddTransactionPage> {
   /// The selected index from Top Tab bar for filtering dashboard
   String selectedIndex = 'expense';
 
+  /// background color for the top bar
   Color get barBackgroundColor {
     switch (selectedIndex) {
       case 'income':
@@ -46,6 +54,7 @@ class _AddTransactionPageState extends State<AddTransactionPage> {
     }
   }
 
+  /// background color for segement control
   Color get segmentBackgroundColor {
     switch (selectedIndex) {
       case 'income':
@@ -59,6 +68,7 @@ class _AddTransactionPageState extends State<AddTransactionPage> {
     }
   }
 
+  /// Color for selected element in the segement control
   Color get thumbColor {
     switch (selectedIndex) {
       case 'income':
@@ -72,6 +82,7 @@ class _AddTransactionPageState extends State<AddTransactionPage> {
     }
   }
 
+  /// Color forbody of the scaffold
   Color get childBackgroundColor {
     switch (selectedIndex) {
       case 'income':
@@ -87,28 +98,42 @@ class _AddTransactionPageState extends State<AddTransactionPage> {
 
   @override
   Widget build(BuildContext context) {
-    return CupertinoPageScaffold(
-      navigationBar: CupertinoNavigationBar(
-        backgroundColor: barBackgroundColor,
-        automaticallyImplyLeading: false,
-        middle: CupertinoSlidingSegmentedControl(
-          thumbColor: thumbColor,
-          backgroundColor: segmentBackgroundColor,
-          // ignore: avoid_types_on_closure_parameters
-          onValueChanged: (String value) {
-            setState(() {
-              selectedIndex = value;
-            });
-          },
-          groupValue: selectedIndex,
-          children: segmentedTabs,
+    return MultiBlocProvider(
+      providers: [
+        BlocProvider<IncomeBloc>(
+          create: (context) => IncomeBloc(),
         ),
-      ),
-      child: CupertinoScaffold(
-        body: Container(
-          color: childBackgroundColor,
-          child: SizedBox.expand(
-            child: tabChildren[selectedIndex],
+        BlocProvider<ExpenseBloc>(
+          create: (context) => ExpenseBloc(),
+        ),
+        BlocProvider<TransferBloc>(
+          create: (context) => TransferBloc(),
+        ),
+      ],
+      child: CupertinoPageScaffold(
+        navigationBar: CupertinoNavigationBar(
+          backgroundColor: barBackgroundColor,
+          // TODO: should we show the back button?
+          automaticallyImplyLeading: false,
+          middle: CupertinoSlidingSegmentedControl(
+            thumbColor: thumbColor,
+            backgroundColor: segmentBackgroundColor,
+            // ignore: avoid_types_on_closure_parameters
+            onValueChanged: (String value) {
+              setState(() {
+                selectedIndex = value;
+              });
+            },
+            groupValue: selectedIndex,
+            children: segmentedTabs,
+          ),
+        ),
+        child: CupertinoScaffold(
+          body: Container(
+            color: childBackgroundColor,
+            child: SizedBox.expand(
+              child: tabChildren[selectedIndex],
+            ),
           ),
         ),
       ),
