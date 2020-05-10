@@ -1,7 +1,9 @@
 import 'package:flutter_form_bloc/flutter_form_bloc.dart';
+import 'package:moor/moor.dart';
 
+import '../../../config/locator.dart';
+import '../../db/database.dart';
 import '../../helpers/form_check.dart';
-import '../../models/transaction_model.dart';
 
 /// Handle state for Add Expense form
 class ExpenseBloc extends FormBloc<String, String> {
@@ -15,6 +17,8 @@ class ExpenseBloc extends FormBloc<String, String> {
       description,
     ]);
   }
+
+  final Database _db = locator.get<Database>();
 
   /// Expense amount
   final TextFieldBloc amount = TextFieldBloc<NoExtraData>(
@@ -44,16 +48,17 @@ class ExpenseBloc extends FormBloc<String, String> {
 
   @override
   Future<void> onSubmitting() async {
-    await Future<void>.delayed(const Duration(seconds: 1));
-    final trans = Expense(
-      id: '12',
-      amount: double.tryParse(amount.value),
-      fromAccount: fromAccount.value,
-      category: category.value,
-      subCategory: subCategory.value,
-      timestamp: timestamp,
+    final expense = ExpensesCompanion(
+      amount: Value(double.tryParse(amount.value)),
+      account: Value(fromAccount.value),
+      category: Value(category.value),
+      subCategory: Value(subCategory.value),
+      note: Value(description.value == '' ? null : description.value),
+      timestamp: Value(timestamp),
     );
-    print(trans);
+    await _db.transactionsDao.insertExpense(expense);
+    print(await _db.transactionsDao.getTranscations());
+    print(description.value == null);
     emitSuccess();
   }
 }

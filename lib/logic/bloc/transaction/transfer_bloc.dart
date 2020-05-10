@@ -1,7 +1,10 @@
 import 'package:flutter_form_bloc/flutter_form_bloc.dart';
 
+import 'package:moor/moor.dart';
+
+import '../../../config/locator.dart';
+import '../../db/database.dart';
 import '../../helpers/form_check.dart';
-import '../../models/transaction_model.dart';
 
 /// Handle state for Add Transfer  transaction form
 class TransferBloc extends FormBloc<String, String> {
@@ -14,6 +17,8 @@ class TransferBloc extends FormBloc<String, String> {
       description,
     ]);
   }
+
+  final Database _db = locator.get<Database>();
 
   /// Transfer amount
   final TextFieldBloc amount = TextFieldBloc<NoExtraData>(
@@ -38,15 +43,15 @@ class TransferBloc extends FormBloc<String, String> {
 
   @override
   Future<void> onSubmitting() async {
-    await Future<void>.delayed(const Duration(seconds: 1));
-    final trans = Transfer(
-      id: '12',
-      amount: double.tryParse(amount.value),
-      fromAccount: fromAccount.value,
-      toAccount: toAccount.value,
-      timestamp: timestamp,
+    final transfer = TransfersCompanion(
+      amount: Value(double.tryParse(amount.value)),
+      fromAccount: Value(fromAccount.value),
+      toAccount: Value(toAccount.value),
+      note: Value(description.value == '' ? null : description.value),
+      timestamp: Value(timestamp),
     );
-    print(trans);
+    await _db.transactionsDao.insertTransfer(transfer);
+    print(await _db.transactionsDao.getTranscations());
     emitSuccess();
   }
 }

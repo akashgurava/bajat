@@ -1,7 +1,9 @@
 import 'package:flutter_form_bloc/flutter_form_bloc.dart';
+import 'package:moor/moor.dart';
 
+import '../../../config/locator.dart';
+import '../../db/database.dart';
 import '../../helpers/form_check.dart';
-import '../../models/transaction_model.dart';
 
 /// Handle state for Add Income form
 class IncomeBloc extends FormBloc<String, String> {
@@ -10,10 +12,12 @@ class IncomeBloc extends FormBloc<String, String> {
     addFieldBlocs(fieldBlocs: [
       amount,
       source,
-      toAccount,
+      account,
       description,
     ]);
   }
+
+  final Database _db = locator.get<Database>();
 
   /// Income amount
   final TextFieldBloc amount = TextFieldBloc<NoExtraData>(
@@ -26,7 +30,7 @@ class IncomeBloc extends FormBloc<String, String> {
   );
 
   /// Account to which income was credited
-  final TextFieldBloc toAccount = TextFieldBloc<NoExtraData>(
+  final TextFieldBloc account = TextFieldBloc<NoExtraData>(
     validators: [FieldBlocValidators.required],
   );
 
@@ -38,15 +42,15 @@ class IncomeBloc extends FormBloc<String, String> {
 
   @override
   Future<void> onSubmitting() async {
-    await Future<void>.delayed(const Duration(seconds: 1));
-    final trans = Income(
-      id: '12',
-      amount: double.tryParse(amount.value),
-      source: source.value,
-      toAccount: toAccount.value,
-      timestamp: timestamp,
+    final income = IncomesCompanion(
+      amount: Value(double.tryParse(amount.value)),
+      source: Value(source.value),
+      account: Value(account.value),
+      note: Value(description.value == '' ? null : description.value),
+      timestamp: Value(timestamp),
     );
-    print(trans);
+    await _db.transactionsDao.insertIncome(income);
+    print(await _db.transactionsDao.getTranscations());
     emitSuccess();
   }
 }

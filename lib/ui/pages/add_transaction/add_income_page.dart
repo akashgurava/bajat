@@ -113,7 +113,7 @@ class _AddIncomePageState extends State<AddIncomePage> {
                     width: 250,
                     child: TextFieldBlocBuilder(
                       style: textStyle,
-                      textFieldBloc: bloc.toAccount,
+                      textFieldBloc: bloc.account,
                       keyboardType: TextInputType.text,
                       decoration: const InputDecoration(
                         labelText: 'To account',
@@ -149,6 +149,7 @@ class _AddIncomePageState extends State<AddIncomePage> {
                     height: 80,
                     width: 300,
                     child: CupertinoDatePicker(
+                      backgroundColor: Colors.transparent,
                       mode: CupertinoDatePickerMode.dateAndTime,
                       initialDateTime: bloc.timestamp,
                       onDateTimeChanged: (datetime) {

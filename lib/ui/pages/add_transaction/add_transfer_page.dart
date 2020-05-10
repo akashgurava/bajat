@@ -149,6 +149,7 @@ class _AddTransferPageState extends State<AddTransferPage> {
                     height: 80,
                     width: 300,
                     child: CupertinoDatePicker(
+                      backgroundColor: Colors.transparent,
                       mode: CupertinoDatePickerMode.dateAndTime,
                       onDateTimeChanged: (datetime) {
                         bloc.timestamp = datetime;

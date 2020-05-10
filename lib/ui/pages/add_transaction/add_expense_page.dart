@@ -164,6 +164,7 @@ class _AddExpensePageState extends State<AddExpensePage> {
                     height: 80,
                     width: 300,
                     child: CupertinoDatePicker(
+                      backgroundColor: Colors.transparent,
                       mode: CupertinoDatePickerMode.dateAndTime,
                       initialDateTime: bloc.timestamp,
                       onDateTimeChanged: (datetime) {
