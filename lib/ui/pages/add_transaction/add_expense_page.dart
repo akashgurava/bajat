@@ -30,7 +30,6 @@ class _AddExpensePageState extends State<AddExpensePage> {
   @override
   Widget build(BuildContext context) {
     final bloc = BlocProvider.of<ExpenseBloc>(context)
-      ..clear()
       ..timestamp = DateTime.now();
 
     return Theme(

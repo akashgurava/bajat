@@ -31,7 +31,6 @@ class _AddIncomePageState extends State<AddIncomePage> {
   @override
   Widget build(BuildContext context) {
     final bloc = BlocProvider.of<IncomeBloc>(context)
-      ..clear()
       ..timestamp = DateTime.now();
 
     return Theme(

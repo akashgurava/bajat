@@ -31,7 +31,6 @@ class _AddTransferPageState extends State<AddTransferPage> {
   @override
   Widget build(BuildContext context) {
     final bloc = BlocProvider.of<TransferBloc>(context)
-      ..clear()
       ..timestamp = DateTime.now();
 
     return Theme(

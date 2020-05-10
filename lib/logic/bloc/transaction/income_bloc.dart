@@ -34,7 +34,7 @@ class IncomeBloc extends FormBloc<String, String> {
   final TextFieldBloc description = TextFieldBloc<NoExtraData>();
 
   /// timestamp of income
-  DateTime timestamp;
+  DateTime timestamp = DateTime.now();
 
   @override
   Future<void> onSubmitting() async {

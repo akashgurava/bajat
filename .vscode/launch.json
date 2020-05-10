@@ -5,11 +5,17 @@
   "version": "0.2.0",
   "configurations": [
     {
-      "name": "Debug",
+      "name": "Debug - Emulator",
       "request": "launch",
       "type": "dart",
       "flutterMode": "debug",
       "args": ["--enable-software-rendering"]
+    },
+    {
+      "name": "Debug",
+      "request": "launch",
+      "type": "dart",
+      "flutterMode": "debug"
     },
     {
       "name": "Profile",

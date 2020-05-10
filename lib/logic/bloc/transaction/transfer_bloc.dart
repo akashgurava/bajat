@@ -34,7 +34,7 @@ class TransferBloc extends FormBloc<String, String> {
   final TextFieldBloc description = TextFieldBloc<NoExtraData>();
 
   /// timestamp of transfer
-  DateTime timestamp;
+  DateTime timestamp = DateTime.now();
 
   @override
   Future<void> onSubmitting() async {
