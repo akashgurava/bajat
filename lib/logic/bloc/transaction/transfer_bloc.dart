@@ -14,7 +14,7 @@ class TransferBloc extends FormBloc<String, String> {
       amount,
       fromAccount,
       toAccount,
-      description,
+      note,
     ]);
   }
 
@@ -36,7 +36,7 @@ class TransferBloc extends FormBloc<String, String> {
   );
 
   /// Any optional description of transfer
-  final TextFieldBloc description = TextFieldBloc<NoExtraData>();
+  final TextFieldBloc note = TextFieldBloc<NoExtraData>();
 
   /// timestamp of transfer
   DateTime timestamp = DateTime.now();
@@ -47,11 +47,10 @@ class TransferBloc extends FormBloc<String, String> {
       amount: Value(double.tryParse(amount.value)),
       fromAccount: Value(fromAccount.value),
       toAccount: Value(toAccount.value),
-      note: Value(description.value == '' ? null : description.value),
+      note: Value(note.value == '' ? null : note.value),
       timestamp: Value(timestamp),
     );
     await _db.transactionsDao.insertTransfer(transfer);
-    print(await _db.transactionsDao.getTranscations());
     emitSuccess();
   }
 }

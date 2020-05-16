@@ -13,8 +13,7 @@ class ExpenseBloc extends FormBloc<String, String> {
       amount,
       fromAccount,
       category,
-      subCategory,
-      description,
+      note,
     ]);
   }
 
@@ -35,13 +34,8 @@ class ExpenseBloc extends FormBloc<String, String> {
     validators: [FieldBlocValidators.required],
   );
 
-  /// Sub category of expense
-  final TextFieldBloc subCategory = TextFieldBloc<NoExtraData>(
-    validators: [FieldBlocValidators.required],
-  );
-
   /// Any optional description of expense
-  final TextFieldBloc description = TextFieldBloc<NoExtraData>();
+  final TextFieldBloc note = TextFieldBloc<NoExtraData>();
 
   /// timestamp of expense
   DateTime timestamp = DateTime.now();
@@ -52,13 +46,10 @@ class ExpenseBloc extends FormBloc<String, String> {
       amount: Value(double.tryParse(amount.value)),
       account: Value(fromAccount.value),
       category: Value(category.value),
-      subCategory: Value(subCategory.value),
-      note: Value(description.value == '' ? null : description.value),
+      note: Value(note.value == '' ? null : note.value),
       timestamp: Value(timestamp),
     );
     await _db.transactionsDao.insertExpense(expense);
-    print(await _db.transactionsDao.getTranscations());
-    print(description.value == null);
     emitSuccess();
   }
 }

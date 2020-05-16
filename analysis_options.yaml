@@ -9,9 +9,11 @@ analyzer:
     missing_return: error
     todo: warning
     close_sinks: ignore
+    public_member_api_docs: ignore # TODO: uncomment whenready to release
   exclude:
     - "lib/logic/db/schema/transactions.g.dart"
     - "lib/logic/db/database.g.dart"
+    - "bkp/**"
 linter:
   rules:
     - always_declare_return_types

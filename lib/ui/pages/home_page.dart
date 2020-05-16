@@ -5,6 +5,8 @@ import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 
 import './add_transaction/add_transaction_page.dart';
 
+import 'transaction_list_page.dart';
+
 /// Homepage for the app.
 class HomePage extends StatelessWidget {
   // ignore: public_member_api_docs
@@ -13,11 +15,7 @@ class HomePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: const SizedBox.expand(
-        child: Center(
-          child: Text('Hello World! Welcome to Bajat'),
-        ),
-      ),
+      body: const SafeArea(child: TransactionListPage()),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
           showCupertinoModalBottomSheet<Widget>(

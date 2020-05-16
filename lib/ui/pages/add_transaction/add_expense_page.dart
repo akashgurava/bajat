@@ -123,31 +123,15 @@ class _AddExpensePageState extends State<AddExpensePage> {
                       ),
                     ),
                   ),
-                  // Sub category
+                  // Note
                   SizedBox(
                     width: 250,
                     child: TextFieldBlocBuilder(
                       style: textStyle,
-                      textFieldBloc: bloc.subCategory,
+                      textFieldBloc: bloc.note,
                       keyboardType: TextInputType.text,
                       decoration: const InputDecoration(
-                        labelText: 'Sub category',
-                        prefixIcon: Icon(
-                          Icons.change_history,
-                          color: color,
-                        ),
-                      ),
-                    ),
-                  ),
-                  // Description
-                  SizedBox(
-                    width: 250,
-                    child: TextFieldBlocBuilder(
-                      style: textStyle,
-                      textFieldBloc: bloc.description,
-                      keyboardType: TextInputType.text,
-                      decoration: const InputDecoration(
-                        labelText: 'Description',
+                        labelText: 'Note',
                         prefixIcon: Icon(
                           Icons.description,
                           color: color,

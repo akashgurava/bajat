@@ -13,7 +13,7 @@ class IncomeBloc extends FormBloc<String, String> {
       amount,
       source,
       account,
-      description,
+      note,
     ]);
   }
 
@@ -35,7 +35,7 @@ class IncomeBloc extends FormBloc<String, String> {
   );
 
   /// Any optional description of income
-  final TextFieldBloc description = TextFieldBloc<NoExtraData>();
+  final TextFieldBloc note = TextFieldBloc<NoExtraData>();
 
   /// timestamp of income
   DateTime timestamp = DateTime.now();
@@ -46,11 +46,10 @@ class IncomeBloc extends FormBloc<String, String> {
       amount: Value(double.tryParse(amount.value)),
       source: Value(source.value),
       account: Value(account.value),
-      note: Value(description.value == '' ? null : description.value),
+      note: Value(note.value == '' ? null : note.value),
       timestamp: Value(timestamp),
     );
     await _db.transactionsDao.insertIncome(income);
-    print(await _db.transactionsDao.getTranscations());
     emitSuccess();
   }
 }

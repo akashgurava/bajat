@@ -42,7 +42,7 @@ Database constructDb({bool logStatements = false}) {
     final executor = LazyDatabase(() async {
       final dataDir = await getApplicationDocumentsDirectory();
       final dbFile = File(join(dataDir.path, 'db.sqlite'));
-      // dbFile.deleteSync();
+      dbFile.deleteSync();
 
       return VmDatabase(dbFile, logStatements: logStatements);
     });

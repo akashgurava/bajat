@@ -124,15 +124,15 @@ class _AddIncomePageState extends State<AddIncomePage> {
                       ),
                     ),
                   ),
-                  // Description
+                  // Note
                   SizedBox(
                     width: 250,
                     child: TextFieldBlocBuilder(
                       style: textStyle,
-                      textFieldBloc: bloc.description,
+                      textFieldBloc: bloc.note,
                       keyboardType: TextInputType.text,
                       decoration: const InputDecoration(
-                        labelText: 'Description',
+                        labelText: 'Note',
                         prefixIcon: Icon(
                           Icons.description,
                           color: color,

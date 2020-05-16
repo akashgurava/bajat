@@ -4,6 +4,23 @@ import '../database.dart';
 
 part 'transactions.g.dart';
 
+class Transaction {
+  Transaction({this.type, this.income, this.expense, this.transfer});
+
+  final String type;
+  final Income income;
+  final Expense expense;
+  final Transfer transfer;
+
+  DateTime get timestamp =>
+      income?.timestamp ?? expense?.timestamp ?? transfer?.timestamp;
+
+  @override
+  String toString() {
+    return 'Transaction(type: $type, timestamp: $timestamp)';
+  }
+}
+
 /// Income table to represent income transactions in DB
 class Incomes extends Table {
   /// Auto increementing primary key
@@ -95,6 +112,8 @@ class TransactionsDao extends DatabaseAccessor<Database>
   /// Get List of all incomes
   Future<List<Income>> getIncomes() => select(incomes).get();
 
+  Stream<List<Income>> watchIncomes() => select(incomes).watch();
+
   /// Insert expense to DB.
   ///
   /// Example:
@@ -114,6 +133,8 @@ class TransactionsDao extends DatabaseAccessor<Database>
   /// Get List of all expenses
   Future<List<Expense>> getExpenses() => select(expenses).get();
 
+  Stream<List<Expense>> watchExpenses() => select(expenses).watch();
+
   /// Insert transfer to DB.
   ///
   /// Example:
@@ -132,15 +153,40 @@ class TransactionsDao extends DatabaseAccessor<Database>
   /// Get List of all transfers
   Future<List<Transfer>> getTransfers() => select(transfers).get();
 
+  Stream<List<Transfer>> watchTransfers() => select(transfers).watch();
+
   /// Get List of all transactions
-  Future<List> getTranscations() async {
-    final list = <dynamic>[
-      ...await getIncomes(),
-      ...await getExpenses(),
-      ...await getTransfers()
-      // ignore: avoid_annotating_with_dynamic
-    ]..sort((dynamic a, dynamic b) =>
-        int.tryParse(a.timestamp.compareTo(b.timestamp).toString()));
+  Future<List<Transaction>> getTranscations() async {
+    final incomeList = await getIncomes();
+    final expenseList = await getExpenses();
+    final transferList = await getTransfers();
+
+    final list = <Transaction>[
+      ...incomeList.map((e) => Transaction(type: 'income', income: e)),
+      ...expenseList.map((e) => Transaction(type: 'expense', expense: e)),
+      ...transferList.map((e) => Transaction(type: 'transfer', transfer: e)),
+    ]..sort((a, b) => a.timestamp.compareTo(b.timestamp));
     return list;
+  }
+
+  // Stream<List<Transaction>> watchTranscations() async* {
+  //   final incomeList = await getIncomes();
+  //   final expenseList = await getExpenses();
+  //   final transferList = await getTransfers();
+
+  //   final list = <Transaction>[
+  //     ...incomeList.map((e) => Transaction(type: 'income', income: e)),
+  //     ...expenseList.map((e) => Transaction(type: 'income', expense: e)),
+  //     ...transferList.map((e) => Transaction(type: 'income', transfer: e)),
+  //   ]..sort((a, b) => a.timestamp.compareTo(b.timestamp));
+  //   yield list;
+  // }
+
+  Stream<void> watchTranscations() async* {
+    yield TableUpdateQuery.allOf([
+      TableUpdateQuery.onTable(incomes),
+      TableUpdateQuery.onTable(expenses),
+      TableUpdateQuery.onTable(transfers),
+    ]);
   }
 }
